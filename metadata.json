@@ -1,0 +1,6 @@
+{
+  "name": "Flash Fotocabinas",
+  "description": "El entretenimiento #1 para eventos en Mendoza. Tótem Fotográfico, Plataforma 360° e impresiones ilimitadas para bodas, cumpleaños y eventos corporativos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
