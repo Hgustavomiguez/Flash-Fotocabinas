@@ -2,6 +2,44 @@
 <html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
+    <script>
+        (function() {
+            function isMetaMaskError(err) {
+                if (!err) return false;
+                var str = (typeof err === 'string' ? err : (err.message || err.description || err.reason || '')) + '';
+                return /metamask|ethereum|web3|evm|extension/i.test(str);
+            }
+            window.addEventListener('error', function(e) {
+                if (isMetaMaskError(e.message) || isMetaMaskError(e.error) || (e.filename && /extension|metamask/i.test(e.filename))) {
+                    e.preventDefault();
+                    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+                    return true;
+                }
+            }, true);
+            window.addEventListener('unhandledrejection', function(e) {
+                if (isMetaMaskError(e.reason) || (e.reason && isMetaMaskError(e.reason.message))) {
+                    e.preventDefault();
+                    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+                    return true;
+                }
+            }, true);
+            var origOnError = window.onerror;
+            window.onerror = function(msg, url, line, col, error) {
+                if (isMetaMaskError(msg) || isMetaMaskError(error) || (url && /extension|metamask/i.test(url))) {
+                    return true;
+                }
+                if (origOnError) return origOnError.apply(this, arguments);
+            };
+            var origOnRejection = window.onunhandledrejection;
+            window.onunhandledrejection = function(e) {
+                if (isMetaMaskError(e ? e.reason : null)) {
+                    if (e && e.preventDefault) e.preventDefault();
+                    return true;
+                }
+                if (origOnRejection) return origOnRejection.apply(this, arguments);
+            };
+        })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flash Fotocabinas | Eventos en Mendoza & Zona Este</title>
 
@@ -1221,8 +1259,9 @@
             btns.forEach(btn => {
                 btn.className = "gal-btn bg-slate-100 text-slate-600 hover:bg-slate-200 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer";
             });
-            if (event && event.target) {
-                event.target.className = "gal-btn bg-slate-900 text-white px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all shadow-md cursor-pointer";
+            var currentEvt = (typeof event !== 'undefined') ? event : (window.event || null);
+            if (currentEvt && currentEvt.target) {
+                currentEvt.target.className = "gal-btn bg-slate-900 text-white px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all shadow-md cursor-pointer";
             }
 
             items.forEach(item => {
